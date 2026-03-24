@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- GOOGLE SHEETS: Paste your Apps Script Web App URL below -->
+    <meta name="google-script-url" content="https://script.google.com/macros/s/AKfycbwC_VOY6y6sULJ6wXvDVyc3_ZXVcKtM4xDyWGQ6gFVkpLAl7h66dCi2lQ3qK2F6jihn/exec">
+    <!-- ADMIN PASSWORD HASH (SHA-256 of your password). Default password: admin2026 -->
+    <!-- To change: open browser console, run: crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_NEW_PASSWORD')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''))) -->
+    <meta name="admin-password-hash" content="6051fc84a7a0d74c225fb18a496b09952da5642e60723ecae543298edd7d82d6">
     <title>Khảo sát về Bình đẳng Giới trong Quản trị Chuỗi Cung ứng</title>
     <style>
         :root {
@@ -35,24 +40,34 @@
 
         /* Header */
         .survey-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            background: var(--primary);
             color: #fff;
-            padding: 40px 36px;
             border-radius: 12px;
             margin-bottom: 24px;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-        .survey-header::after {
+        .survey-banner {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+        .survey-header-content {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            padding: 36px 36px 40px;
+            position: relative;
+        }
+        .survey-header-content::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 50%;
+            top: -30px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to top, var(--primary), transparent);
+            pointer-events: none;
         }
         .survey-header h1 {
             font-size: 22px;
@@ -463,12 +478,15 @@
     <div class="survey-container">
         <!-- Header -->
         <div class="survey-header">
-            <div class="org">RMIT VIETNAM — UN WOMEN</div>
-            <h1>BẢNG CÂU HỎI KHẢO SÁT</h1>
-            <h1 style="font-size:16px; font-weight:400; margin-top:4px;">Khảo sát về Bình đẳng Giới trong Quản trị Chuỗi Cung ứng<br>và Nhu cầu Đào tạo về Chuyển đổi Số và Phát triển Bền vững<br>cho Nữ Lãnh đạo tại Việt Nam</h1>
-            <p class="subtitle" style="margin-top:16px;">
-                Chúng tôi, nhóm nghiên cứu đến từ RMIT Việt Nam, đang thực hiện dự án nghiên cứu này. Mời bạn điền vào bảng câu hỏi sau. Phản hồi của bạn là vô cùng quan trọng đối với chúng tôi và đối với sự thành công của dự án.
-            </p>
+            <img src="rmit-banner.jpg" alt="RMIT Vietnam Campus" class="survey-banner" onerror="this.style.display='none'">
+            <div class="survey-header-content">
+                <div class="org">RMIT VIETNAM — UN WOMEN</div>
+                <h1>BẢNG CÂU HỎI KHẢO SÁT</h1>
+                <h1 style="font-size:16px; font-weight:400; margin-top:4px;">Khảo sát về Bình đẳng Giới trong Quản trị Chuỗi Cung ứng<br>và Nhu cầu Đào tạo về Chuyển đổi Số và Phát triển Bền vững<br>cho Nữ Lãnh đạo tại Việt Nam</h1>
+                <p class="subtitle" style="margin-top:16px;">
+                    Chúng tôi, nhóm nghiên cứu đến từ RMIT Việt Nam, đang thực hiện dự án nghiên cứu này. Mời bạn điền vào bảng câu hỏi sau. Phản hồi của bạn là vô cùng quan trọng đối với chúng tôi và đối với sự thành công của dự án.
+                </p>
+            </div>
         </div>
 
         <!-- Progress -->
@@ -478,6 +496,12 @@
         </div>
 
         <form id="surveyForm" novalidate>
+            <!-- Email -->
+            <div class="date-field">
+                <label for="respondent-email">Email:</label>
+                <input type="text" id="respondent-email" name="respondent_email" placeholder="example@email.com (không bắt buộc)">
+            </div>
+
             <!-- Date -->
             <div class="date-field">
                 <label for="survey-date">Ngày khảo sát:</label>
@@ -496,6 +520,7 @@
                         <div class="options-list">
                             <label><input type="radio" name="q_info_1" value="Nam" required> Nam</label>
                             <label><input type="radio" name="q_info_1" value="Nữ"> Nữ</label>
+                            <label><input type="radio" name="q_info_1" value="Khác"> Khác (Other)</label>
                         </div>
                     </div>
                     <!-- Q2 -->
@@ -734,7 +759,7 @@
                 </div>
                 <div class="section-body">
                     <div class="section-instruction">Đánh giá việc hỗ trợ ra quyết định bằng Generative AI (GAI) tại công ty nơi bạn làm.</div>
-                    <div class="question-block"><div class="question-label"><span class="q-num">1</span><span>Các công cụ AI tạo năng (Generative AI) được sử dụng để hỗ trợ ra quyết định trong chuỗi cung ứng.</span></div><div class="likert-scale"><span class="likert-end left">Hoàn toàn<br>không đồng ý</span><div class="likert-options"><label><span>1</span><input type="radio" name="gai_1" value="1" required></label><label><span>2</span><input type="radio" name="gai_1" value="2"></label><label><span>3</span><input type="radio" name="gai_1" value="3"></label><label><span>4</span><input type="radio" name="gai_1" value="4"></label><label><span>5</span><input type="radio" name="gai_1" value="5"></label></div><span class="likert-end right">Hoàn toàn<br>đồng ý</span></div></div>
+                    <div class="question-block"><div class="question-label"><span class="q-num">1</span><span>Các công cụ AI tạo sinh (Generative AI) được sử dụng để hỗ trợ ra quyết định trong chuỗi cung ứng.</span></div><div class="likert-scale"><span class="likert-end left">Hoàn toàn<br>không đồng ý</span><div class="likert-options"><label><span>1</span><input type="radio" name="gai_1" value="1" required></label><label><span>2</span><input type="radio" name="gai_1" value="2"></label><label><span>3</span><input type="radio" name="gai_1" value="3"></label><label><span>4</span><input type="radio" name="gai_1" value="4"></label><label><span>5</span><input type="radio" name="gai_1" value="5"></label></div><span class="likert-end right">Hoàn toàn<br>đồng ý</span></div></div>
                     <div class="question-block"><div class="question-label"><span class="q-num">2</span><span>Các hệ thống dựa trên AI giúp giảm bớt định kiến trong việc đánh giá hiệu suất chuỗi cung ứng.</span></div><div class="likert-scale"><span class="likert-end left">Hoàn toàn<br>không đồng ý</span><div class="likert-options"><label><span>1</span><input type="radio" name="gai_2" value="1" required></label><label><span>2</span><input type="radio" name="gai_2" value="2"></label><label><span>3</span><input type="radio" name="gai_2" value="3"></label><label><span>4</span><input type="radio" name="gai_2" value="4"></label><label><span>5</span><input type="radio" name="gai_2" value="5"></label></div><span class="likert-end right">Hoàn toàn<br>đồng ý</span></div></div>
                     <div class="question-block"><div class="question-label"><span class="q-num">3</span><span>Phân tích được AI hỗ trợ giúp cải thiện sự công bằng trong quản lý nhân sự.</span></div><div class="likert-scale"><span class="likert-end left">Hoàn toàn<br>không đồng ý</span><div class="likert-options"><label><span>1</span><input type="radio" name="gai_3" value="1" required></label><label><span>2</span><input type="radio" name="gai_3" value="2"></label><label><span>3</span><input type="radio" name="gai_3" value="3"></label><label><span>4</span><input type="radio" name="gai_3" value="4"></label><label><span>5</span><input type="radio" name="gai_3" value="5"></label></div><span class="likert-end right">Hoàn toàn<br>đồng ý</span></div></div>
                     <div class="question-block"><div class="question-label"><span class="q-num">4</span><span>Các công cụ AI giúp tăng tính minh bạch trong quản trị chuỗi cung ứng.</span></div><div class="likert-scale"><span class="likert-end left">Hoàn toàn<br>không đồng ý</span><div class="likert-options"><label><span>1</span><input type="radio" name="gai_4" value="1" required></label><label><span>2</span><input type="radio" name="gai_4" value="2"></label><label><span>3</span><input type="radio" name="gai_4" value="3"></label><label><span>4</span><input type="radio" name="gai_4" value="4"></label><label><span>5</span><input type="radio" name="gai_4" value="5"></label></div><span class="likert-end right">Hoàn toàn<br>đồng ý</span></div></div>
@@ -834,7 +859,7 @@
                 &#9432; <strong>Hướng dẫn:</strong><br>
                 1. Mở Google Sheets mới &rarr; Extensions &rarr; Apps Script<br>
                 2. Dán đoạn mã bên dưới &rarr; Deploy &rarr; New deployment &rarr; Web app (Anyone)<br>
-                3. Copy URL và dán vào ô trên<br>
+                3. Copy URL và dán vào ô trên, hoặc chỉnh sửa thẻ <code>&lt;meta name="google-script-url"&gt;</code> trong mã HTML<br>
                 <button class="btn btn-sm" style="font-size:11px; padding:3px 10px; margin-top:6px; background:#f0f2f8; color:var(--primary); border:1px solid var(--border);" onclick="showAppsScript()">&#128203; Xem mã Apps Script</button>
             </div>
         </div>
@@ -890,7 +915,12 @@
         // ==================== STATE ====================
         let customQuestions = JSON.parse(localStorage.getItem('survey_custom_questions') || '[]');
         let responses = JSON.parse(localStorage.getItem('survey_responses') || '[]');
-        let googleScriptUrl = localStorage.getItem('survey_google_url') || '';
+
+        // Read Google Script URL from <meta> tag (safe, no quote issues)
+        const metaUrl = document.querySelector('meta[name="google-script-url"]');
+        const GOOGLE_SCRIPT_URL = (metaUrl && metaUrl.getAttribute('content')) || '';
+
+        let googleScriptUrl = GOOGLE_SCRIPT_URL || localStorage.getItem('survey_google_url') || '';
 
         // ==================== INIT ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1032,9 +1062,43 @@
         }
 
         // ==================== ADMIN ====================
+        const ADMIN_HASH = (document.querySelector('meta[name="admin-password-hash"]') || {}).content || '';
+        let adminAuthenticated = sessionStorage.getItem('admin_auth') === 'true';
+
+        function sha256(str) {
+            return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf) {
+                return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+            });
+        }
+
         function toggleAdmin() {
-            document.getElementById('adminPanel').classList.toggle('active');
-            document.getElementById('adminOverlay').classList.toggle('active');
+            var panel = document.getElementById('adminPanel');
+            // If panel is already open, just close it
+            if (panel.classList.contains('active')) {
+                panel.classList.remove('active');
+                document.getElementById('adminOverlay').classList.remove('active');
+                return;
+            }
+            // If already authenticated this session, open directly
+            if (adminAuthenticated) {
+                panel.classList.add('active');
+                document.getElementById('adminOverlay').classList.add('active');
+                return;
+            }
+            // Prompt for password
+            var pwd = prompt('Nhập mật khẩu quản trị:');
+            if (!pwd) return;
+            sha256(pwd).then(function(hash) {
+                if (hash === ADMIN_HASH) {
+                    adminAuthenticated = true;
+                    sessionStorage.setItem('admin_auth', 'true');
+                    panel.classList.add('active');
+                    document.getElementById('adminOverlay').classList.add('active');
+                    showToast('Đăng nhập quản trị thành công!', '#27ae60');
+                } else {
+                    showToast('Sai mật khẩu. Truy cập bị từ chối.', '#e74c3c');
+                }
+            });
         }
 
         function addCustomQuestion() {
@@ -1190,13 +1254,19 @@
         // ==================== GOOGLE SHEETS ====================
         function sendToGoogleSheets(data) {
             if (!googleScriptUrl) return Promise.resolve(false);
+
+            // Use URL-encoded form body to avoid CORS preflight
+            const formBody = new URLSearchParams();
+            formBody.append('payload', JSON.stringify(data));
+
             return fetch(googleScriptUrl, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(function() {
-                return true;
+                body: formBody
+            }).then(function(response) {
+                if (response.ok) {
+                    return response.json().then(function() { return true; }).catch(function() { return true; });
+                }
+                return true; // opaque response from redirect is still OK
             }).catch(function(err) {
                 console.error('Google Sheets error:', err);
                 return false;
@@ -1240,7 +1310,7 @@
         }
 
         function showAppsScript() {
-            const code = `// Dán mã này vào Google Apps Script\n// File: Code.gs\n\nfunction doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var data = JSON.parse(e.postData.contents);\n  \n  // Auto-create headers on first row if empty\n  if (sheet.getLastRow() === 0) {\n    var headers = Object.keys(data);\n    sheet.appendRow(headers);\n  }\n  \n  // Match data to headers\n  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];\n  var row = headers.map(function(h) { return data[h] || ''; });\n  \n  // Add new columns for any new keys\n  Object.keys(data).forEach(function(key) {\n    if (headers.indexOf(key) === -1) {\n      headers.push(key);\n      sheet.getRange(1, headers.length).setValue(key);\n      row.push(data[key] || '');\n    }\n  });\n  \n  sheet.appendRow(row);\n  \n  return ContentService\n    .createTextOutput(JSON.stringify({status: 'ok'}))\n    .setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doGet(e) {\n  return ContentService\n    .createTextOutput(JSON.stringify({status: 'ready'}))\n    .setMimeType(ContentService.MimeType.JSON);\n}`;
+            const code = `// Dán mã này vào Google Apps Script\n// File: Code.gs\n// Google Sheet: https://docs.google.com/spreadsheets/d/1UY-N-yUDx6BMOVcqUvn51mduxvPF5_QqTLj3t6uJEds/edit\n\n// FIXED COLUMN HEADERS - 74 variables matching the survey form\nvar HEADERS = ['timestamp', 'respondent_email', 'survey_date', 'q_info_1', 'q_info_2', 'q_info_3', 'q_info_3_other', 'q_info_4', 'q_info_5', 'q_info_6', 'q_info_7', 'q_info_8', 'q_info_9', 'sei_1', 'sei_2', 'sei_3', 'sei_4', 'sei_5', 'sei_6', 'sei_7', 'lwi_1', 'lwi_2', 'lwi_3', 'lwi_4', 'lwi_5', 'lwi_6', 'lwi_7', 'pgi_1', 'pgi_2', 'pgi_3', 'pgi_4', 'pgi_5', 'pgi_6', 'pgi_7', 'scpo_1', 'scpo_2', 'scpo_3', 'scpo_4', 'scpo_5', 'scpo_6', 'scpo_7', 'sesi_1', 'sesi_2', 'sesi_3', 'sesi_4', 'sesi_5', 'sesi_6', 'hcsc_1', 'hcsc_2', 'hcsc_3', 'hcsc_4', 'hcsc_5', 'hcsc_6', 'hcsc_7', 'gai_1', 'gai_2', 'gai_3', 'gai_4', 'gai_5', 'gai_6', 'gai_7', 'aai_1', 'aai_2', 'aai_3', 'aai_4', 'aai_5', 'aai_6', 'esg_1', 'esg_2', 'esg_3', 'esg_4', 'esg_5', 'esg_6', 'esg_7'];\n\nfunction doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var payload = e.parameter.payload;\n  var data = JSON.parse(payload);\n\n  // Create headers on first row if sheet is empty\n  if (sheet.getLastRow() === 0) {\n    sheet.appendRow(HEADERS);\n    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');\n    sheet.setFrozenRows(1);\n  }\n\n  var existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];\n  var row = existingHeaders.map(function(h) { return data[h] || ''; });\n\n  // Add any new keys (e.g. custom questions)\n  Object.keys(data).forEach(function(key) {\n    if (existingHeaders.indexOf(key) === -1) {\n      existingHeaders.push(key);\n      sheet.getRange(1, existingHeaders.length).setValue(key);\n      row.push(data[key] || '');\n    }\n  });\n\n  sheet.appendRow(row);\n  return ContentService.createTextOutput(JSON.stringify({status: 'ok', rows: sheet.getLastRow()})).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doGet(e) {\n  return ContentService.createTextOutput(JSON.stringify({status: 'ready'})).setMimeType(ContentService.MimeType.JSON);\n}\n\n// Run this ONCE to set up headers in your Google Sheet\nfunction setupHeaders() {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  sheet.clear();\n  sheet.appendRow(HEADERS);\n  var r = sheet.getRange(1, 1, 1, HEADERS.length);\n  r.setFontWeight('bold').setBackground('#000054').setFontColor('#FFFFFF').setHorizontalAlignment('center');\n  sheet.setFrozenRows(1);\n  for (var i = 1; i <= HEADERS.length; i++) { sheet.setColumnWidth(i, 120); }\n  SpreadsheetApp.getUi().alert('Done! ' + HEADERS.length + ' columns created.');\n}`;
             
             const win = window.open('', '_blank', 'width=700,height=600');
             win.document.write('<html><head><title>Google Apps Script Code</title><style>body{font-family:monospace;background:#1e1e2e;color:#cdd6f4;padding:20px;margin:0;}pre{white-space:pre-wrap;font-size:13px;line-height:1.6;}h2{color:#89b4fa;font-family:sans-serif;font-size:16px;}button{background:#89b4fa;color:#1e1e2e;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;}button:hover{opacity:0.8;}</style></head><body>');
